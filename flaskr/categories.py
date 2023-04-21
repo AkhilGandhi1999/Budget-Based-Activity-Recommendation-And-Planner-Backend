@@ -1,5 +1,8 @@
 import requests
 import datetime
+import pickle
+import redis
+import json
 
 from flask import (
     Blueprint, request, jsonify
@@ -7,14 +10,40 @@ from flask import (
 
 bp = Blueprint('categories', __name__, url_prefix='/categories')
 
+
 @bp.route('/get_categories', methods=('GET', 'POST'))
 def get_categories():
-    res = requests.post("http://127.0.0.1:5002/get_recommadations", json = request.get_json());
-    return convertToRequiredFormat(res.json())
+    r = redis.Redis('localhost')
+    print('started redis server')
+    redis_key = get_redis_key(request.get_json())
+    print(redis_key)
+    if r.get(redis_key) == None:
+        res = requests.post("http://127.0.0.1:5200/get_recommadations", json = request.get_json());
+        resturnRes = convertToRequiredFormat(res.json())
+        serialized_data = json.dumps(resturnRes)
+        r.set(redis_key, serialized_data)
+        return resturnRes
+    else:
+        print('Found similar request previously so using cached data')
+        retrieved_data = r.get(redis_key)
+        deserialized_data = json.loads(retrieved_data)
+        return deserialized_data
 
-        
+def get_redis_key(request_json):
+    provience = request_json.get('province')
+    price_low = str(request_json.get('low'))
+    price_high = str(request_json.get('high'))
+    date_start = request_json.get('begin_date')
+    date_end = request_json.get('end_date')
+    keys = request_json.get('cat_rating').keys()
+    key_category = ''
+    for i in keys:
+        key_category = key_category + "#" + i 
+    final_key =  provience + "#" + price_low + "#" + price_high + "#" + key_category + "#" + date_start + "#" + date_end
+    return final_key
+
 def convertToRequiredFormat(reponseBody):
-    print(reponseBody)
+
     totalDays =  datetime.datetime.strptime(request.get_json().get('end_date'), '%Y-%m-%d').date().day - datetime.datetime.strptime(request.get_json().get('begin_date'), '%Y-%m-%d').date().day
     responseBodyToReturn = {}
 

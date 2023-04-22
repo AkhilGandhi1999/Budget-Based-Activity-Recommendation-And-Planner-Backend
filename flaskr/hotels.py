@@ -11,20 +11,20 @@ bp = Blueprint('hotels', __name__, url_prefix='/hotels')
 #     res = requests.get("http://127.0.0.1:5200/get_ammenities");
 #     return res.json()
 
-@bp.route('/get_hotel_recommandations')
+@bp.route('/get_hotel_recommandations/')
 def get_hotel_recommandations():
-    print('asdfsadfas')
-    res = requests.get("http://127.0.0.1:5200/get_hotel_recommandations");
+    res = requests.get("http://127.0.0.1:5200/get_hotel_recommandations?province="  + request.args.get('province'));
     return convertToRequiredFormat(res.json())
-
+    
 def convertToRequiredFormat(reponseBody):
     responseBodyToReturn = {}
 
-    totalDays = 3
-    for i in range(totalDays+1):
-        responseBodyToReturn.update({i+1 : []})
+    totalDays = len(reponseBody.get('address'))
 
-    for i in range((totalDays + 1)):
+    for i in range(totalDays):
+        responseBodyToReturn.update({i : []})
+
+    for i in range((totalDays)):
         place = {}
         place['address'] = reponseBody.get('address')[i] 
         place['experience'] = reponseBody.get('experience')[i]
@@ -32,6 +32,6 @@ def convertToRequiredFormat(reponseBody):
         place['location'] = reponseBody.get('location')[i]
         place['name'] = reponseBody.get('name')[i]
         place['rating'] = reponseBody.get('rating')[i]
-        responseBodyToReturn.get(i + 1).append(place)
+        responseBodyToReturn.get(i).append(place)
     
     return responseBodyToReturn

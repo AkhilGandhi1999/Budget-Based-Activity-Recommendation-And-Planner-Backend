@@ -59,6 +59,6 @@ jobs:
           pip install -r requirements.txt
           echo "Running gunicorn command"
           ps ax|grep gunicorn
-          gunicorn app:app -b 0.0.0.0:5001 --daemon          
+          gunicorn app:flaskr -b 0.0.0.0:5001 --daemon          
           
           

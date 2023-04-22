@@ -47,23 +47,59 @@ def convertToRequiredFormat(reponseBody):
     totalDays =  datetime.datetime.strptime(request.get_json().get('end_date'), '%Y-%m-%d').date().day - datetime.datetime.strptime(request.get_json().get('begin_date'), '%Y-%m-%d').date().day
     responseBodyToReturn = {}
 
+    responseBodyToReturn.update({'categories':{}})
+    responseBodyToReturn.update({'recommandations':{}})
     for i in range(totalDays+1):
-        responseBodyToReturn.update({i+1 : []})
+        responseBodyToReturn.get('categories').update({i+1 : []})
 
     day = 0
     for i in range((totalDays + 1) * 8):
         place = {}
         place['category'] = reponseBody.get('category')[i] 
-        place['image'] = reponseBody.get('image')[i]
+        #place['image'] = reponseBody.get('image')[i]
         place['location'] = reponseBody.get('location')[i]
         place['timeofday'] = reponseBody.get('timeofday')[i]
         place['rating'] = reponseBody.get('rating')[i]
         place['name'] = reponseBody.get('name')[i]
         place['price'] = reponseBody.get('price')[i]
-        responseBodyToReturn.get(((int)((day/8) + 1))).append(place)
+        responseBodyToReturn.get('categories').get(((int)((day/8) + 1))).append(place)
         day += 1
-
+    
+    responseBodyToReturn.get('recommandations').update(getRecommandationsForEachDay(responseBodyToReturn, totalDays))
     return responseBodyToReturn
 
-#def getRecommandationsForEachDay(reponseBody):
-    
+def getRecommandationsForEachDay(reponseBody, totalDays):
+    recommdation = {}
+    for i in range(totalDays+1):
+        recommdation.update({i+1 : []})
+
+    for i in range(totalDays + 1):
+        dictMorning = {}
+        dictEvening = {}
+        for k in range(4):
+            cat = reponseBody.get('categories').get(i+1)[k]
+            dictMorning[cat.get('price')] = cat
+        
+        for k in range(4,8):
+            cat = reponseBody.get('categories').get(i+1)[k]
+            dictEvening[cat.get('price')] = cat
+
+        myKeys = list(dictMorning.keys())
+        myKeys.sort()
+        sorted_dict_Morning = {i: dictMorning[i] for i in myKeys}
+
+        myKeys = list(dictEvening.keys())
+        myKeys.sort()
+        sorted_dict_Evening = {i: dictEvening[i] for i in myKeys}
+
+        for morning in range(2):
+            value = sorted_dict_Morning.get(list(sorted_dict_Morning.keys())[morning])
+            recommdation.get(i+1).append(value)
+
+        for evening in range(2):
+            value = sorted_dict_Evening.get(list(sorted_dict_Evening.keys())[evening])
+            recommdation.get(i+1).append(value)
+
+
+    return recommdation
+        

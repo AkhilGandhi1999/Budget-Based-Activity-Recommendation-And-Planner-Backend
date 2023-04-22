@@ -54,11 +54,9 @@ jobs:
           echo "$PRIVATE_KEY"
           echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME}
-          git pull 
-          pip install -r requirements.txt
-          echo "Running gunicorn command"
-          ps ax|grep gunicorn
-          gunicorn app:flaskr -b 0.0.0.0:5001 --daemon          
-          
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
+            pwd && 
+            cd /home/ubuntu/BDAbackend/BDA-BackEnd
+            pwd
+          '
           

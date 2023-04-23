@@ -13,7 +13,8 @@ bp = Blueprint('hotels', __name__, url_prefix='/hotels')
 
 @bp.route('/get_hotel_recommandations/')
 def get_hotel_recommandations():
-    res = requests.get("http://127.0.0.1:5200/get_hotel_recommandations?province="  + request.args.get('province'));
+
+    res = requests.post("http://127.0.0.1:5200/get_hotel_recommandations", json=request.get_json());
     return convertToRequiredFormat(res.json())
     
 def convertToRequiredFormat(reponseBody):

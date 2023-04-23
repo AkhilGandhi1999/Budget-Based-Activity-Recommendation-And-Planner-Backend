@@ -56,7 +56,7 @@ def convertToRequiredFormat(reponseBody):
     for i in range((totalDays + 1) * 8):
         place = {}
         place['category'] = reponseBody.get('category')[i] 
-        #place['image'] = reponseBody.get('image')[i]
+        place['image'] = reponseBody.get('image')[i]
         place['location'] = reponseBody.get('location')[i]
         place['timeofday'] = reponseBody.get('timeofday')[i]
         place['rating'] = reponseBody.get('rating')[i]

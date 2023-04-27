@@ -11,7 +11,7 @@ bp = Blueprint('hotels', __name__, url_prefix='/hotels')
 #     res = requests.get("http://127.0.0.1:5200/get_ammenities");
 #     return res.json()
 
-@bp.route('/get_hotel_recommandations/')
+@bp.route('/get_hotel_recommandations/', methods=('POST'))
 def get_hotel_recommandations():
 
     res = requests.post("http://127.0.0.1:5200/get_hotel_recommandations", json=request.get_json());

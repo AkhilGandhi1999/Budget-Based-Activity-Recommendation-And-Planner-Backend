@@ -3,6 +3,7 @@ import datetime
 import pickle
 import redis
 import json
+import re
 
 from flask import (
     Blueprint, request, jsonify
@@ -55,13 +56,15 @@ def convertToRequiredFormat(reponseBody):
     day = 0
     for i in range((totalDays + 1) * 8):
         place = {}
-        place['category'] = reponseBody.get('category')[i] 
+        place['category'] = clean_and_capitalize(reponseBody.get('category')[i]) 
         place['image'] = reponseBody.get('image')[i]
         place['location'] = reponseBody.get('location')[i]
         place['timeofday'] = reponseBody.get('timeofday')[i]
         place['rating'] = reponseBody.get('rating')[i]
         place['name'] = reponseBody.get('name')[i]
         place['price'] = reponseBody.get('price')[i]
+        date = datetime.datetime.strptime(request.get_json().get('begin_date'), '%Y-%m-%d')+ datetime.timedelta(days=((int)((day/8)))); 
+        place['date'] = date.strftime('%Y-%m-%d')
         responseBodyToReturn.get('categories').get(((int)((day/8) + 1))).append(place)
         day += 1
     
@@ -103,3 +106,8 @@ def getRecommandationsForEachDay(reponseBody, totalDays):
 
     return recommdation
         
+def clean_and_capitalize(string):
+    string = re.sub(r'[^\x00-\x7F]+|_', ' ', string)
+    string = ' '.join(word.capitalize() for word in string.split())
+    
+    return string

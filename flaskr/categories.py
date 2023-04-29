@@ -65,6 +65,8 @@ def convertToRequiredFormat(reponseBody):
         place['price'] = reponseBody.get('price')[i]
         date = datetime.datetime.strptime(request.get_json().get('begin_date'), '%Y-%m-%d')+ datetime.timedelta(days=((int)((day/8)))); 
         place['date'] = date.strftime('%Y-%m-%d')
+        place['locationToggle'] = True
+        place['calendarToggle'] = True
         responseBodyToReturn.get('categories').get(((int)((day/8) + 1))).append(place)
         day += 1
     

@@ -12,7 +12,7 @@ from flask import (
 bp = Blueprint('categories', __name__, url_prefix='/categories')
 
 
-@bp.route('/get_categories', methods=('POST'))
+@bp.route('/get_categories', methods=('GET', 'POST'))
 def get_categories():
     r = redis.Redis('localhost')
     print('started redis server')

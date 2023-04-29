@@ -12,7 +12,7 @@ from flask import (
 bp = Blueprint('categories', __name__, url_prefix='/categories')
 
 
-@bp.route('/get_categories', methods=('GET', 'POST'))
+@bp.route('/get_categories', methods=('POST'))
 def get_categories():
     r = redis.Redis('localhost')
     print('started redis server')
@@ -57,11 +57,11 @@ def convertToRequiredFormat(reponseBody):
     for i in range((totalDays + 1) * 8):
         place = {}
         place['category'] = clean_and_capitalize(reponseBody.get('category')[i]) 
-        #place['image'] = reponseBody.get('image')[i]
+        place['image'] = reponseBody.get('image')[i]
         place['location'] = reponseBody.get('location')[i]
         place['timeofday'] = reponseBody.get('timeofday')[i]
         place['rating'] = reponseBody.get('rating')[i]
-        place['name'] = reponseBody.get('name')[i]
+        place['name'] = clean_and_capitalize(reponseBody.get('name')[i])
         place['price'] = reponseBody.get('price')[i]
         date = datetime.datetime.strptime(request.get_json().get('begin_date'), '%Y-%m-%d')+ datetime.timedelta(days=((int)((day/8)))); 
         place['date'] = date.strftime('%Y-%m-%d')
@@ -111,5 +111,4 @@ def getRecommandationsForEachDay(reponseBody, totalDays):
 def clean_and_capitalize(string):
     string = re.sub(r'[^\x00-\x7F]+|_', ' ', string)
     string = ' '.join(word.capitalize() for word in string.split())
-    
     return string
